@@ -78,9 +78,7 @@ The Auto Scaling Group now manages application instances automatically.
 
 ### Auto Scaling Group Overview
 
-```
-screenshots/asg/asg-overview.png
-```
+![ASG Overview](../screenshots/asg/asg-overview.png)
 
 ---
 
