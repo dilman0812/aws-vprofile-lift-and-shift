@@ -2,26 +2,40 @@
 
 ## Overview
 
-This project demonstrates the **migration of a multi-tier web application (vProfile)** from a locally provisioned infrastructure to **AWS Cloud** using a **Lift & Shift strategy**.
+This project demonstrates the **Lift & Shift migration of a multi-tier web application (vProfile)** from a local virtualized environment to **AWS Cloud**.
 
-The goal is to replicate a production-style environment on AWS while improving:
+The objective is to replicate a production-like system using cloud infrastructure while improving:
 
-- Infrastructure flexibility
 - Scalability
+- Availability
 - Cost efficiency
 - Operational simplicity
 
-The project focuses on **cloud infrastructure design and deployment**, not application development.
+The focus of this project is **infrastructure engineering and deployment**, not application development.
+
+---
+
+## Architecture
+
+![AWS Architecture](architecture/aws-architecture.png)
+
+This architecture represents a **production-style multi-tier system** with:
+
+- Public access via Load Balancer
+- Auto Scaling application layer
+- Private backend services
+- DNS-based service discovery
+- Artifact-based deployment
 
 ---
 
 ## Background
 
-In a previous project, the vProfile application stack was deployed locally using:
+In a previous project, the same application stack was deployed locally using:
 
 - Vagrant
 - VirtualBox
-- Shell provisioning scripts
+- Shell provisioning
 
 Repository:
 
@@ -29,41 +43,38 @@ Repository:
 vprofile-local-devops-stack
 ```
 
-That setup simulated a production environment locally.
+While effective for learning, local infrastructure introduces:
 
-However, running such infrastructure in a **traditional data center** introduces several challenges:
+- Manual management overhead
+- Lack of scalability
+- No fault tolerance
+- High operational complexity
 
-- Complex infrastructure management
-- High upfront hardware cost
-- Limited scalability
-- Manual operations
-- Difficult automation
-
-Cloud platforms like AWS solve these challenges by providing **Infrastructure as a Service (IaaS)**.
+This project transitions that setup into a **cloud-native infrastructure model**.
 
 ---
 
-## Lift & Shift Strategy
+## Migration Strategy (Lift & Shift)
 
-Lift & Shift is a migration approach where an existing application is moved to the cloud **without major architectural changes**.
-
-Instead of redesigning the application:
+The migration follows a **Lift & Shift approach**:
 
 ```
 Local VMs → AWS EC2 Instances
 ```
 
-This allows organizations to migrate workloads quickly while maintaining compatibility with existing systems.
+- No major changes to application architecture
+- Infrastructure moved to AWS
+- Services hosted on EC2
+
+This enables **rapid migration with minimal refactoring**.
 
 ---
 
 ## Application Architecture
 
-The vProfile application consists of several services working together.
-
 | Layer | Service | Purpose |
 |---|---|---|
-Web | Load Balancer | Entry point |
+Web | Application Load Balancer | Entry point (HTTPS) |
 Application | Apache Tomcat | Java application server |
 Messaging | RabbitMQ | Message broker |
 Cache | Memcached | Performance optimization |
@@ -73,36 +84,55 @@ Database | MySQL | Persistent storage |
 
 ## AWS Services Used
 
-This project uses several AWS services to host and operate the application infrastructure.
-
-| AWS Service | Purpose |
+| Service | Purpose |
 |---|---|
-EC2 | Virtual machines running application services |
+EC2 | Application and backend servers |
 Application Load Balancer | Traffic distribution |
-Auto Scaling | Automatic scaling of application servers |
+Auto Scaling Group | High availability and scaling |
 S3 | Artifact storage |
-Route 53 | Private DNS for service discovery |
-AWS Certificate Manager | SSL/TLS certificates |
-Security Groups | Network security |
+Route 53 | Private DNS (service discovery) |
+AWS Certificate Manager | SSL/TLS (HTTPS) |
+Security Groups | Network isolation |
+IAM | Secure access (user + role) |
 EBS | Instance storage |
+
+---
+
+## Request Flow
+
+```
+User
+ ↓
+GoDaddy DNS (CNAME)
+ ↓
+Application Load Balancer (HTTPS via ACM)
+ ↓
+Target Group
+ ↓
+Auto Scaling Group (Tomcat EC2)
+ ↓
+Route53 Private DNS
+ ↓
+Backend Services (MySQL, Memcached, RabbitMQ)
+```
 
 ---
 
 ## Deployment Workflow
 
-The infrastructure is deployed in stages.
+The infrastructure was built step-by-step:
 
 ```
-1. Security Groups and Keypairs
-2. EC2 Instances
+1. Security Groups & Keypairs
+2. EC2 Instances (Backend + App)
 3. Route 53 Private DNS
-4. Build and Deploy Application Artifact
-5. Load Balancer Setup
-6. Auto Scaling Group Configuration
-7. Application Validation
+4. Build & Deploy Artifact (Maven + S3)
+5. Application Load Balancer (HTTPS + Domain)
+6. Auto Scaling Group
+7. Validation
 ```
 
-Each stage is documented inside the `/setup` directory.
+Each step is documented in the `/setup` directory.
 
 ---
 
@@ -114,34 +144,46 @@ aws-vprofile-lift-and-shift
 ├── README.md
 │
 ├── architecture
-│   └── architecture.md
-│
-├── docs
+│   ├── architecture.md
+│   └── aws-architecture.png
 │
 ├── setup
-│   ├── 01-security-groups-keypairs.md
-│
-├── scripts
+│   ├── 01-security-groups.md
+│   ├── 02-ec2-instances.md
+│   ├── 03-route53-private-dns.md
+│   ├── 04-build-deploy-artifact.md
+│   ├── 05-load-balancer.md
+│   └── 06-autoscaling-group.md
 │
 └── screenshots
 ```
 
 ---
 
-## Current Progress
+## Key Achievements
 
-Completed:
+- Designed **multi-tier AWS architecture**
+- Implemented **secure network segmentation**
+- Deployed application using **artifact-based approach (S3)**
+- Configured **HTTPS with custom domain**
+- Built **Auto Scaling infrastructure**
+- Achieved **zero dependency on single instance (self-healing)**
+
+---
+
+## Validation
+
+The application is successfully accessible via:
 
 ```
-✔ Security Groups
-✔ Key Pair Setup
+https://vprofileapp.dev-dilman.online/
 ```
 
-Next Step:
+This confirms:
 
-```
-EC2 Instance Deployment
-```
+- Load Balancer routing is working
+- Auto Scaling instances are serving traffic
+- Application is fully functional on AWS
 
 ---
 
@@ -149,12 +191,12 @@ EC2 Instance Deployment
 
 This project demonstrates:
 
-- Cloud infrastructure design
+- Cloud architecture design
 - AWS networking and security
-- Multi-tier application deployment
 - Load balancing and scaling
-- Infrastructure migration strategies
-- Practical DevOps cloud workflows
+- DNS-based service discovery
+- Artifact-based deployment pipelines
+- Real-world DevOps workflows
 
 ---
 
@@ -162,12 +204,13 @@ This project demonstrates:
 
 - Infrastructure as Code (Terraform)
 - CI/CD pipeline integration
-- Containerization (Docker)
-- Kubernetes orchestration
-- Monitoring and observability
+- Docker containerization
+- Kubernetes deployment (EKS)
+- Monitoring (CloudWatch + Prometheus)
 
 ---
 
 ## Author
 
-Built as part of a **DevOps learning journey**, focusing on practical cloud infrastructure implementation and real-world deployment patterns.
+Dilman Sandhu  
+DevOps & Cloud Engineering Learning Journey
