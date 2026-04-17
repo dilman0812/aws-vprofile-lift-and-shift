@@ -47,9 +47,7 @@ ssh -i vprofile-prod-key.pem ec2-user@<EC2_PUBLIC_IP>
 
 ### Screenshot
 
-```
-screenshots/keypairs/vprofile-keypair.png
-```
+![Keypair Screenshot](../screenshots/keypairs/vprofile-keypair.png)
 
 ---
 
@@ -87,9 +85,7 @@ HTTPS is allowed because later the load balancer will use **AWS Certificate Mana
 
 ### Screenshot
 
-```
-screenshots/security-groups/elb-sg-inbound.png
-```
+![ELB SG Rules](../screenshots/security-groups/elb-sg-inbound.png)
 
 ---
 
@@ -111,9 +107,7 @@ Only the load balancer is allowed to access the application servers, enforcing *
 
 ### Screenshot
 
-```
-screenshots/security-groups/app-sg-rules.png
-```
+![App SG Rules](../screenshots/security-groups/app-sg-rules.png)
 
 ---
 
@@ -144,9 +138,7 @@ Allowing **all traffic within the security group** ensures backend services can 
 
 ### Screenshot
 
-```
-screenshots/security-groups/backend-sg-rules.png
-```
+![Backend SG Rules](../screenshots/security-groups/backend-sg-rules.png)
 
 ---
 
