@@ -81,17 +81,13 @@ Hardcoded IP addresses
 
 ### Hosted Zone
 
-```
-screenshots/route53/route53-hosted-zone.png
-```
+![Route53 Hosted Zone](../screenshots/route53/route53-hosted-zone.png)
 
 ---
 
 ### DNS Records
 
-```
-screenshots/route53/route53-records.png
-```
+![Route53 Records](../screenshots/route53/route53-records.png)
 
 ---
 

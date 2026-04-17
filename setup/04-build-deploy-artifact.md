@@ -1,222 +1,98 @@
 ---
-title: Build and Deploy Application Artifact
+title: Route 53 Private DNS Setup
 project: AWS vProfile Lift & Shift
 ---
 
 ## Overview
 
-In this step, the application artifact was built locally and deployed to the EC2 instance using Amazon S3.
+In a cloud environment, using IP addresses directly in application configuration is not reliable.
 
-The process includes:
+If an instance is replaced, its IP address changes, requiring manual updates in the application.
 
-- Building the application using Maven
-- Uploading the artifact to S3
-- Downloading the artifact on the EC2 instance
-- Deploying it to Tomcat
+To solve this, a DNS-based approach is used for service communication.
 
 ---
 
-## Source Code
+## Problem
 
-The application source code was cloned from:
+Using IP addresses in configuration leads to:
 
-```
-https://github.com/hkhcoder/vprofile-project
-```
-
----
-
-## Build Artifact
-
-The artifact was built using Maven.
-
-Command used:
-
-```bash
-mvn install
-```
-
-Build result:
-
-- WAR file generated:
-
-```
-target/vprofile-v2.war
-```
+- Manual updates when instances are replaced
+- Tight coupling between application and infrastructure
+- Reduced flexibility
 
 ---
 
-## AWS CLI Configuration
+## Solution
 
-AWS CLI was configured on the local machine using IAM user credentials.
+A private DNS system was set up using Amazon Route 53.
 
-Command used:
-
-```bash
-aws configure
-```
-
-This enables authentication to upload files to S3.
+Services communicate using domain names instead of IP addresses, and Route 53 resolves those names to the corresponding private IPs.
 
 ---
 
-## S3 Bucket
+## Hosted Zone
 
-An S3 bucket was created to store the artifact.
+A private hosted zone was created with the following configuration:
 
 ```
-Bucket Name: vprofile-las-artifactz37
+Domain Name: vprofile.in
+Type: Private Hosted Zone
+Region: us-east-1
 ```
+
+This hosted zone is associated with the VPC and enables internal DNS resolution between instances.
 
 ---
 
-## Upload Artifact to S3
+## DNS Records
 
-The artifact was uploaded using AWS CLI.
+The following records were created:
 
-```bash
-aws s3 cp target/vprofile-v2.war s3://vprofile-las-artifactz37/
 ```
+db01.vprofile.in   → Database instance private IP
+mc01.vprofile.in   → Memcached instance private IP
+rmq01.vprofile.in  → RabbitMQ instance private IP
+```
+
+These records allow the application to refer to backend services using stable names.
 
 ---
 
-## IAM Configuration
+## Usage
 
-### IAM User
-
-- User: vprofile-s3-admin
-- Permission: AmazonS3FullAccess
-- Used for local machine authentication
-
-### IAM Role
-
-- Role: s3-admin
-- Permission: AmazonS3FullAccess
-- Attached to EC2 instance (vprofile-app01)
-
-This allows the EC2 instance to access S3 without using credentials.
-
----
-
-## Deployment on EC2 (Tomcat)
-
-The following steps were performed on the EC2 instance (vprofile-app01).
-
----
-
-### Install AWS CLI
-
-```bash
-snap install aws-cli --classic
-```
-
----
-
-### Download Artifact from S3
-
-```bash
-aws s3 cp s3://vprofile-las-artifactz37/vprofile-v2.war /tmp/
-```
-
----
-
-### Stop Tomcat
-
-```bash
-systemctl stop tomcat10
-systemctl daemon-reload
-systemctl stop tomcat10
-```
-
----
-
-### Remove Default Application
-
-```bash
-rm -rf /var/lib/tomcat10/webapps/ROOT
-```
-
----
-
-### Deploy New Artifact
-
-```bash
-cp /tmp/vprofile-v2.war /var/lib/tomcat10/webapps/ROOT.war
-```
-
----
-
-### Start Tomcat
-
-```bash
-systemctl start tomcat10
-```
-
----
-
-### Verification
-
-```bash
-ls /var/lib/tomcat10/webapps
-```
-
-Output:
+The application will use:
 
 ```
-ROOT  ROOT.war
+db01.vprofile.in
+mc01.vprofile.in
+rmq01.vprofile.in
+```
+
+Instead of:
+
+```
+Hardcoded IP addresses
 ```
 
 ---
 
 ## Screenshots
 
-### S3 Bucket
+### Hosted Zone
 
-```
-screenshots/s3/s3-bucket-created.png
-```
+![Route53 Hosted Zone](../screenshots/route53/route53-hosted-zone.png)
 
 ---
 
-### Artifact in S3
+### DNS Records
 
-```
-screenshots/s3/s3-artifact-upload.png
-```
-
----
-
-### IAM Role
-
-```
-screenshots/s3/iam-role.png
-```
-
----
-
-### IAM Role Attached to EC2
-
-```
-screenshots/s3/ec2-iam-role-attached.png
-```
-
----
-
-## Result
-
-The application artifact was successfully:
-
-- Built locally
-- Uploaded to S3
-- Downloaded on EC2
-- Deployed to Tomcat
-
-The application is now running internally on the EC2 instance.
+![Route53 Records](../screenshots/route53/route53-records.png)
 
 ---
 
 ## Next Step
 
 ```
-05-load-balancer.md
+04-build-deploy-artifact.md
 ```
