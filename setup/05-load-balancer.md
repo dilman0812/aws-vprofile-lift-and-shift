@@ -98,25 +98,19 @@ https://vprofileapp.dev-dilman.online/
 
 ### Target Group and Health
 
-```
-screenshots/alb/alb-target-group.png
-```
+![Target Group](../screenshots/alb/alb-target-group.png)
 
 ---
 
 ### Load Balancer Overview
 
-```
-screenshots/alb/alb-overview.png
-```
+![ALB Overview](../screenshots/alb/alb-overview.png)
 
 ---
 
 ### Domain Access (HTTPS)
 
-```
-screenshots/alb/domain-https-working.png
-```
+![Domain HTTPS](../screenshots/alb/domain-https-working.png)
 
 ---
 
