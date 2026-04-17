@@ -130,41 +130,31 @@ All services were running successfully.
 
 ### EC2 Instances Overview
 
-```
-screenshots/ec2/ec2-instances-overview.png
-```
+![EC2 Overview](../screenshots/ec2/ec2-instances-overview.png)
 
 ---
 
 ### Database Instance (vprofile-db01)
 
-```
-screenshots/ec2/ec2-db-instance.png
-```
+![DB Instance](../screenshots/ec2/ec2-db-instance.png)
 
 ---
 
 ### Memcached Instance (vprofile-mc01)
 
-```
-screenshots/ec2/ec2-mc-instance.png
-```
+![Memcached Instance](../screenshots/ec2/ec2-mc-instance.png)
 
 ---
 
 ### RabbitMQ Instance (vprofile-rmq01)
 
-```
-screenshots/ec2/ec2-rmq-instance.png
-```
+![RabbitMQ Instance](../screenshots/ec2/ec2-rmq-instance.png)
 
 ---
 
-[O### Application Instance (vprofile-app01)
+### Application Instance (vprofile-app01)
 
-```
-screenshots/ec2/ec2-app-instance.png
-```
+![App Instance](../screenshots/ec2/ec2-app-instance.png)
 
 ---
 
