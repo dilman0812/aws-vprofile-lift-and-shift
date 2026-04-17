@@ -40,6 +40,8 @@ Tomcat
   └── RabbitMQ
 ```
 
+---
+
 ## AWS Migration Strategy
 
 The migration follows a **Lift & Shift approach**, meaning:
@@ -52,7 +54,7 @@ This approach enables quick migration while maintaining compatibility with the e
 
 ---
 
-## Target AWS Architecture (Planned)
+## Target AWS Architecture
 
 The AWS deployment replaces the local infrastructure components with cloud-managed resources.
 
@@ -61,32 +63,54 @@ The AWS deployment replaces the local infrastructure components with cloud-manag
 | Component | AWS Service |
 |---|---|
 Compute | EC2 Instances |
-Load Balancing | Application Load Balancer (ELB) |
+Load Balancing | Application Load Balancer (ALB) |
 Scaling | Auto Scaling Group |
-Storage | S3 / EFS |
+Storage | Amazon S3 |
 DNS | Route 53 |
 Certificates | AWS Certificate Manager |
 Security | Security Groups |
-Authentication | EC2 Key Pairs |
+Authentication | IAM (User + Role) |
 
 ---
 
-## Planned Request Flow
+## Request Flow
 
 ```
 User
  ↓
-Domain (GoDaddy DNS)
+Domain (GoDaddy DNS - CNAME)
  ↓
-Application Load Balancer (HTTPS)
+Application Load Balancer (HTTPS via ACM)
  ↓
-Tomcat EC2 Instances (Auto Scaling Group)
+Auto Scaling Group (Tomcat EC2 Instances)
  ↓
-Backend Services
-   ├── MySQL
-   ├── Memcached
-   └── RabbitMQ
+Route 53 Private DNS
+   ├── db01.vprofile.in → MySQL
+   ├── mc01.vprofile.in → Memcached
+   └── rmq01.vprofile.in → RabbitMQ
 ```
+
+---
+
+## Artifact Flow
+
+The application deployment follows a build and artifact distribution model:
+
+```
+Local Machine
+   ↓
+Build (Maven)
+   ↓
+WAR Artifact
+   ↓
+Amazon S3 (Artifact Storage)
+   ↓
+EC2 (Tomcat Instances)
+   ↓
+Application Deployment
+```
+
+This separates build and runtime environments and enables consistent deployments.
 
 ---
 
@@ -108,9 +132,9 @@ vprofile-backend-sg
 
 | Security Group | Purpose |
 |---|---|
-vprofile-ELB-SG | Public entry point |
-vprofile-app-sg | Application servers |
-vprofile-backend-sg | Backend services |
+vprofile-ELB-SG | Public entry point (ALB) |
+vprofile-app-sg | Application servers (Tomcat) |
+vprofile-backend-sg | Backend services (DB, Cache, Messaging) |
 
 This layered model ensures:
 
@@ -122,7 +146,7 @@ This layered model ensures:
 
 ## Infrastructure Deployment Phases
 
-The infrastructure is deployed incrementally in the following stages:
+The infrastructure was deployed incrementally in the following stages:
 
 ```
 1. Security Groups & Keypairs
@@ -140,9 +164,7 @@ Each stage is documented separately in the `/setup` directory.
 
 ## Architecture Diagram
 
-The final AWS architecture diagram will be added after completing all infrastructure components.
-
-Future diagram location:
+The final AWS architecture diagram is available at:
 
 ```
 architecture/aws-architecture.png
@@ -152,12 +174,13 @@ architecture/aws-architecture.png
 
 ## Outcome
 
-After completing this migration, the vProfile application will run on AWS with:
+After completing this migration, the vProfile application runs on AWS with:
 
 - Scalable infrastructure
 - Load-balanced traffic distribution
 - Automated instance scaling
 - Secure network segmentation
-- Cloud-based artifact storage
+- Cloud-based artifact storage (S3)
+- DNS-based service discovery (Route 53)
 
 This demonstrates a practical **Lift & Shift migration of a multi-tier application workload to AWS Cloud**.
