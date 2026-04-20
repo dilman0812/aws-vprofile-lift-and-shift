@@ -213,4 +213,5 @@ This project demonstrates:
 ## Author
 
 Dilman Sandhu  
-DevOps & Cloud Engineering Learning Journey
+DevOps & Cloud Engineer
+contact.dilman@gmail.com
